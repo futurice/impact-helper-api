@@ -70,6 +70,21 @@ const handleGetUprightProfile = async (
   return profile;
 };
 
+const handleGetUprightProfileRelaxed = async (
+    // This method returns HTTP 204 "No Content" success status response instead of
+    // 404 "Not found" error to allow e.g. Zapier webhook to continue the workflow.
+    request: Hapi.Request,
+    h: Hapi.ResponseToolkit
+) => {
+  const profile = await getUprightProfile(request.params.id, false);
+  if (!profile) {
+    return h
+        .response()
+        .code(204);
+  }
+  return profile;
+};
+
 const handleGetUprightProfileURL = async (
   request: Hapi.Request,
   _h: Hapi.ResponseToolkit
@@ -92,6 +107,7 @@ async function sendError(message: string, slack: boolean) {
 export {
   handlePostDeal,
   handleGetUprightProfile,
+  handleGetUprightProfileRelaxed,
   handleGetUprightProfileURL,
   sendError,
 };
